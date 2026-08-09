@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS69069 · Presence</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .nav-links { text-align: center; margin: 6px 0; }
+  .nav-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .nav-links .wallet { color: #facc15; }
+  .nav-links .history { color: var(--brand-blue-soft); }
+  .nav-links .offers { color: var(--brand-green-bright); }
+  .nav-links .legacy { color: #a78bfa; }
+
+  label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-size: 18px;
+    color: #ffffff;
+    font-weight: 900;
+  }
+  select {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: white;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+  .chips button {
+    width: auto; padding: 10px 16px; margin: 0; font-size: 16px;
+    background: var(--input-bg); border-radius: 20px;
+    font-weight: 900;
+  }
+  .chips button.chip-active { background: var(--brand-blue); }
+  button.secondary { background: #4b5563; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  #downloadJsonBtn.has-data,
+  #copyJsonBtn.has-data { background: var(--brand-blue) !important; }
+  .warning-card h2 { color: #facc15; }
+  .info-card h2 { color: var(--brand-blue-soft); }
+  .rules { margin-left: 18px; font-size: 14px; line-height: 1.55; color: #d1d5db; }
+  .rules li { margin-bottom: 6px; }
+  .info-text { font-size: 14px; line-height: 1.6; color: #d1d5db; margin-bottom: 6px; }
+  .muted { color: #9ca3af; font-size: 14px; }
+  .small { font-size: 13px; margin-bottom: 10px; }
+  .filters { display: flex; gap: 8px; margin-top: 12px; margin-bottom: 14px; }
+  .filter-btn { width: auto; padding: 8px 14px; margin: 0; font-size: 14px; background: var(--input-bg); }
+  .filter-btn.active { background: var(--brand-blue); }
+  .offers-list { max-height: 70vh; overflow: auto; }
+  .offer-card {
+    background: var(--bg); border: 1px solid var(--input-bg); border-radius: 12px;
+    padding: 14px; margin-bottom: 12px;
+  }
+  .offer-card.sell { border-left: 4px solid var(--brand-green); }
+  .offer-card.buy { border-left: 4px solid var(--brand-blue); }
+  .offer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .offer-type { font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; color: white; }
+  .offer-amount { font-size: 18px; font-weight: bold; }
+  .signed-badge { font-size: 11px; background: #7c3aed; padding: 2px 7px; border-radius: 6px; }
+  .pending-badge { font-size: 11px; background: #ca8a04; padding: 2px 7px; border-radius: 6px; }
+  .offer-price { font-size: 16px; margin-bottom: 4px; color: #facc15; }
+  .offer-method, .offer-contact, .offer-note, .offer-balance { font-size: 14px; margin-top: 4px; color: #d1d5db; }
+  .offer-meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
+  .offer-meta a { color: var(--brand-blue-soft); }
+  .offer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .small-btn { width: auto; padding: 8px 12px; margin: 0; font-size: 13px; background: var(--input-bg); }
+  .small-btn.danger { background: #b91c1c; }
+  .status-badge { font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: bold; }
+  .status-open { background: var(--input-bg); color: #e5e7eb; }
+  .status-accepted { background: #1d4ed8; color: white; }
+  .status-closed { background: #15803d; color: white; }
+  .signed-msg {
+    margin-top: 8px; padding: 10px; background: #0f172a; border-radius: 8px;
+    font-size: 12px; color: #9ca3af; white-space: pre-wrap; word-break: break-all; display: none;
+  }
+  .signed-msg.show { display: block; }
+  .accept-list { font-size: 13px; color: #d1d5db; margin-top: 6px; }
+  .rep-line { font-size: 13px; color: #a3e635; margin-top: 4px; }
+  code { background: var(--input-bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  #jsonPreview {
+    width: 100%; margin-top: 12px; background: var(--bg); color: #e5e7eb;
+    border: 1px solid var(--input-bg); border-radius: 10px; padding: 10px;
+    font-size: 12px; font-family: monospace; box-sizing: border-box;
+  }
+  .sync-live { color: #f97316; font-weight: 700; }
+  .sync-dot { display: none; }
+  .effective-blue { color: var(--brand-blue-soft); font-weight: 700; }
+  #connectButton { margin-bottom: 12px; }
+  .offer-id {
+    font-size: 13px;
+    color: #6b7280;
+    margin-right: 8px;
+    font-weight: 700;
+  }
+  .status-section { margin-top: 8px; }
+  .status-section p { margin: 4px 0; }
+  .wallet-address { margin-top: 8px; }
+  .market-price-line {
+    font-size: 16px;
+    color: #d1d5db;
+    margin: 6px 0;
+  }
+  .market-price-line .price-value {
+    color: #facc15;
+    font-weight: 700;
+  }
+  .live-sync-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .live-sync-text .sync-count { color: #f97316; }
+  .safety-rule-item {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #d1d5db;
+    margin-bottom: 6px;
+  }
+  .creator-address-line {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .creator-address-line a {
+    color: var(--brand-blue-soft);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header-row">
+  <a href="index.html">
+    <img src="logo.webp" alt="SOS69069" class="logo-badge">
+  </a>
+  <div>
+    <h1>SOS69069 Presence</h1>
+    <p class="subtitle">Ethereum Mainnet</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="card nav-links" style="margin-bottom:1px">
+  <a href="index.html" class="wallet">Ledger</a>
+  <a href="history.html" class="history">History</a>
+  <a href="offers.html" class="offers">Presence</a>
+  <a href="legacy.html" class="legacy">Legacy</a>
+</div>
+
+<!-- ===== CONNECT LEDGER ===== -->
+<div class="card" style="margin-bottom:3px">
+  <button id="connectButton">Connect Ledger</button>
+  <div class="status-section">
+    <p>Status:</p>
+    <div id="status">Ready</div>
+  </div>
+  <div class="status-section wallet-address">
+    <p>Ledger:</p>
+    <div id="address">-</div>
+  </div>
+</div>
+
+<!-- ===== SOS PRESENCE ===== -->
+<div class="card" style="margin-bottom:3px">
+  <h2>SOS Presence</h2>
+  <p style="font-size:1.2rem; font-weight:700;">
+    Effective:
+    <span id="effective" style="color:var(--brand-blue-soft);">0</span>
+  </p>
+  <p style="margin-top:8px">
+    Trust: <span id="trust">0</span> ·
+    Push: <span id="push">0</span> ·
+    Total Supply: <span id="totalSupply">0</span>
+  </p>
+  <p id="effectiveHint" class="muted small" style="display:none;color:#fca5a5;margin-top:6px"></p>
+  <p style="margin-top:10px">
+    <a id="etherscanLink" href="#" target="_blank" rel="noopener" style="color:var(--brand-blue-soft)">
+      Open on Etherscan →
+    </a>
+  </p>
+</div>
+
+<!-- ===== Presence of Trust ===== -->
+<div class="card" id="marketCard" style="margin-bottom:3px">
+  <div class="market-price-line">
+    TRUST (max): <span class="price-value" id="midBuy">—</span>
+  </div>
+  <div class="market-price-line">
+    PUSH (max): <span class="price-value" id="midSell">—</span>
+  </div>
+  <p class="muted small" id="midMeta" style="margin-top:8px;display:none;">No priced Presence yet</p>
+</div>
+
+<!-- ===== NEW OFFER / POST PRESENCE ===== -->
+<div class="card">
+  <h2>CREATE</h2>
+  <select id="offerType">
+    <option value="sell">TRUST (Send Trust)</option>
+    <option value="buy">PUSH (Recieve Push)</option>
+  </select>
+  <label>Amount</label>
+  <input id="offerAmount" type="number" min="1" step="1" placeholder="e.g. 1">
+  <label>In RETURN</label>
+  <input id="offerPrice" placeholder="e.g. 0.01 ETH, 5 USDC, or a bag of Chupa Chups">
+  <div class="chips" id="methodChips">
+    <button type="button" data-method="ETH">ETH</button>
+    <button type="button" data-method="USDT">USDT</button>
+    <button type="button" data-method="BTC">BTC</button>
+    <button type="button" data-method="Fiat">Fiat</button>
+    <button type="button" data-method="Cash">Cash</button>
+    <button type="button" data-method="Goods">Goods</button>
+    <button type="button" data-method="Services">Services</button>
+    <button type="button" data-method="Other">Other</button>
+  </div>
+  <label>Contact</label>
+  <input id="offerContact" placeholder="Telegram / X / Discord / email">
+  <button id="signOfferBtn">CREATE</button>
+</div>
+
+<!-- ===== PRESENCE OFFERS ===== -->
+<div class="card">
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="sell">TRUST</button>
+    <button class="filter-btn" data-filter="buy">PUSH</button>
+  </div>
+  <div id="offersList" class="offers-list"><p class="muted">Loading Presence…</p></div>
+</div>
+
+<!-- ===== SAFETY RULES OF PRESENCE ===== -->
+<div class="card warning-card" style="margin-bottom:3px">
+  <h2>Safety of Presence</h2>
+  <p style="font-size:1.2rem; font-weight:700; line-height:1.55; word-break:normal; overflow-wrap:normal; hyphens:none;">
+    SOS itself is never transferred as an Asset.<br>
+    Presence is written Permanently into your Ledger by the SOS minting Action.<br>
+    If TRUST is accepted → you must send PUSH to the Seeker.
+    Effective - genuine unspent activity.Trust = total SOS received. 
+    Push = SOS you minted via actions.<br>
+  </p>
+</div>
+
+</div>
+
+<script type="module">
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.min.js";
+  window.ethers = ethers;
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getDatabase, ref, get, set, update, onValue
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwX5jMN6EECEr3n7NpJ60fMrDUwZro8ss",
+    authDomain: "sos69069-145e0.firebaseapp.com",
+    databaseURL: "https://sos69069-145e0-default-rtdb.firebaseio.com",
+    projectId: "sos69069-145e0",
+    storageBucket: "sos69069-145e0.firebasestorage.app",
+    messagingSenderId: "462397970850",
+    appId: "1:462397970850:web:0ceaed4410771a6361bafb"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getDatabase(fbApp);
+  const offersRef = ref(db, "offers");
+
+  window.SOSDB = {
+    async loadOffers() {
+      const snap = await get(offersRef);
+      const val = snap.val() || {};
+      return Object.values(val);
+    },
+    async saveOffer(offer) {
+      await set(ref(db, "offers/" + offer.id), offer);
+    },
+    watchOffers(callback) {
+      onValue(offersRef, (snap) => {
+        const val = snap.val() || {};
+        callback(Object.values(val));
+      });
+    },
+    watchConnection(callback) {
+      onValue(ref(db, ".info/connected"), (snap) => {
+        callback(snap.val() === true);
+      });
+    }
+  };
+</script>
+
+<script src="contract.js"></script>
+<script src="offers.js"></script>
+
+<script>
+  (function() {
+    // Override watchOffers to limit to 20 and add sequential numbering
+    const originalWatch = window.SOSDB.watchOffers;
+    if (originalWatch) {
+      window.SOSDB.watchOffers = function(callback) {
+        originalWatch(function(offers) {
+          const sorted = offers.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          const latest20 = sorted.slice(0, 20);
+          const meta = document.getElementById('exportMeta');
+          if (meta) {
+            meta.innerHTML = 'Live · <span class="sync-count">' + latest20.length + ' deal(s) synced</span>';
+          }
+          callback(latest20);
+        });
+      };
+    }
+
+    const listContainer = document.getElementById('offersList');
+    const listObserver = new MutationObserver(function() {
+      const cards = listContainer.querySelectorAll('.offer-card');
+      cards.forEach((card, index) => {
+        if (card.querySelector('.offer-id')) return;
+        const num = String(index).padStart(5, '0');
+        const header = card.querySelector('.offer-header');
+        if (header) {
+          const idSpan = document.createElement('span');
+          idSpan.className = 'offer-id';
+          idSpan.textContent = '#' + num;
+          header.prepend(idSpan);
+        }
+      });
+    });
+    listObserver.observe(listContainer, { childList: true, subtree: true });
+  })();
+</script>
+
+<!-- Auto-connect + balance load -->
+<script>
+  async function loadBalancesFor(addr) {
+    try {
+      if (typeof getTrust !== "function" || typeof getPushCount !== "function") {
+        console.warn("getTrust / getPushCount not available yet");
+        return;
+      }
+      const trust = await getTrust(addr);
+      const push = await getPushCount(addr);
+      const total = typeof getTotalSupply === "function" ? await getTotalSupply() : 0n;
+      const effective = BigInt(trust) - BigInt(push);
+
+      const elEff = document.getElementById("effective");
+      const elTrust = document.getElementById("trust");
+      const elPush = document.getElementById("push");
+      const elTotal = document.getElementById("totalSupply");
+
+      if (elEff) elEff.innerText = effective.toString();
+      if (elTrust) elTrust.innerText = trust.toString();
+      if (elPush) elPush.innerText = push.toString();
+      if (elTotal) elTotal.innerText = total.toString();
+
+      // Update Etherscan link
+      const link = document.getElementById("etherscanLink");
+      if (link) {
+        const SOS_CONTRACT = "0x61af906f53Eb927790055AC8eA99916a01873c15";
+        link.href = "https://etherscan.io/token/" + SOS_CONTRACT + "?a=" + addr;
+        link.innerText = "Open on Etherscan →";
+      }
+
+      const hint = document.getElementById("effectiveHint");
+      if (hint) {
+        if (effective < 0n) {
+          hint.style.display = "block";
+          hint.innerText = "Effective is " + effective.toString() +
+            " — PUSH is blocked. Seek more TRUST.";
+        } else {
+          hint.style.display = "none";
+          hint.innerText = "";
+        }
+      }
+    } catch (err) {
+      console.error("loadBalancesFor failed:", err);
+    }
+  }
+
+  window.addEventListener("load", function () {
+    setTimeout(async function () {
+      try {
+        if (!window.ethereum) return;
+
+        const accounts = await window.ethereum.request({
+          method: "eth_accounts"
+        });
+
+        if (!accounts || !accounts[0]) return;
+
+        document.getElementById("status").innerText = "Connecting…";
+
+        const addr = await connectWallet();
+        document.getElementById("address").innerText = addr;
+
+        if (typeof refreshWallet === "function") {
+          await refreshWallet();
+        }
+
+        await loadBalancesFor(addr);
+
+        const signBtn = document.getElementById("signOfferBtn");
+        if (signBtn) signBtn.disabled = false;
+
+        document.getElementById("status").innerText = "Connected";
+      } catch (err) {
+        console.warn("Auto-connect failed:", err);
+      }
+    }, 700);
+  });
+
+  document.getElementById("connectButton")?.addEventListener("click", async function () {
+    try {
+      const addr = await connectWallet();
+      document.getElementById("address").innerText = addr;
+      await loadBalancesFor(addr);
+
+      const signBtn = document.getElementById("signOfferBtn");
+      if (signBtn) signBtn.disabled = false;
+
+      document.getElementById("status").innerText = "Connected";
+    } catch (err) {
+      document.getElementById("status").innerText = err.message || "Connection failed";
+    }
+  });
+</script>
+
+</body>
+</html>

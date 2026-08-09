@@ -1,0 +1,82 @@
+[
+  {
+    "id": "msdejxsz9677x",
+    "type": "sell",
+    "amount": "5",
+    "price": "5",
+    "method": "USDT",
+    "contact": "tarumora@gmail.com",
+    "note": "",
+    "poster": "0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9",
+    "createdAt": "2026-08-03T15:47:00.707Z",
+    "filled": false,
+    "signature": "0xffff23dd1c2626c618eabc897381a2aac3203b41fb67ade6893d572b2c98614a0a7d25e6c6764406f958fa8796f166628557d1c49490be0f29beb40373819e991b",
+    "signedMessage": "SOS69069 Offer\nType: sell\nAmount: 5 SOS\nPrice: 5\nMethod: USDT\nContact: tarumora@gmail.com\nPoster: 0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9\nTime: 2026-08-03T15:47:00.707Z",
+    "mintTx": "0x6c01efdc86ccdaf367c31c7c750b7b5cc2a6e032aead41d424a5d276647c1223",
+    "accepts": [
+      {
+        "address": "0x1C10e6574ee696f54b21A611a21313E4714628ad",
+        "mintTx": "0x3cb625bcf7b0d87b75b9c8351c8697fa3902c80bac0ea5fab0af5b5e6a602300",
+        "at": "2026-08-03T16:24:37.337Z",
+        "signature": "0xd24fa41326fffe406e2b8b85231b044e06f76f7cc1bb2aebb5c77591566b667d6336cd8145b96823120f43ddf69264a80e5b3bff44efbce9bbb632cdec31bc2c1b",
+        "signedMessage": "SOS69069 Accept\nOfferId: msdejxsz9677x\nAcceptor: 0x1C10e6574ee696f54b21A611a21313E4714628ad\nPoster: 0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9\nTime: 2026-08-03T16:24:11.095Z"
+      }
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "msdei20u49uhe",
+    "type": "buy",
+    "amount": "3",
+    "price": "3",
+    "method": "USDT",
+    "contact": "tarumora@gmail.com",
+    "note": "",
+    "poster": "0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9",
+    "createdAt": "2026-08-03T15:45:32.862Z",
+    "filled": false,
+    "signature": "0x2b01142c437c131bedbc3c1195f827beea7334fa964525690d37d5d3d96e4cab2b5bc7b24afbb1c3c209fce681aae45dd3a248268026fd2a6c259cf3df1a61861c",
+    "signedMessage": "SOS69069 Offer\nType: buy\nAmount: 3 SOS\nPrice: 3\nMethod: USDT\nContact: tarumora@gmail.com\nPoster: 0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9\nTime: 2026-08-03T15:45:32.862Z",
+    "mintTx": "0x0d46cd64613a187e8819873e77dba6359eb1024a1071fbdf560604e5f91d55e0",
+    "accepts": [
+      {
+        "address": "0x1C10e6574ee696f54b21A611a21313E4714628ad",
+        "mintTx": "0xac1ee9a6f498a984b29ab9fe0d6b0a22a0a34cb1b459738c110f982791e26810",
+        "at": "2026-08-03T16:45:16.485Z",
+        "signature": "0x8a53e06afe8767d5af5b0fa043c991e32a563b0d506f9a4e1876d0c69e2e437078e9f20b0e56e2a403b2a3116b69beb9b047a1ea20e69608c3be2bd803fb0c6e1b",
+        "signedMessage": "SOS69069 Accept\nOfferId: msdei20u49uhe\nAcceptor: 0x1C10e6574ee696f54b21A611a21313E4714628ad\nPoster: 0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9\nTime: 2026-08-03T16:44:50.016Z"
+      }
+    ],
+    "status": "accepted"
+  },
+  {
+    "id": "msdef4lmfto7f",
+    "type": "buy",
+    "amount": "2",
+    "price": "2",
+    "method": "USDT",
+    "contact": "tarumora@gmail.com",
+    "note": "",
+    "poster": "0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9",
+    "createdAt": "2026-08-03T15:43:16.234Z",
+    "filled": false,
+    "signature": null,
+    "signedMessage": null,
+    "mintTx": "0x2ee3f8cfc432b51bb577cf6280dc350c8d1aeb62a8223666a0310c4f14906910"
+  },
+  {
+    "id": "msdebqsw86ewc",
+    "type": "sell",
+    "amount": "1",
+    "price": "1",
+    "method": "USDT",
+    "contact": "tarumora@gmail.com",
+    "note": "",
+    "poster": "0x922804717cd4ffFD1cb1Bf81eea7FF06CAf94aA9",
+    "createdAt": "2026-08-03T15:40:38.385Z",
+    "filled": false,
+    "signature": null,
+    "signedMessage": null,
+    "mintTx": "0x9482444c972e2bf727f229e2e9175284b0ab84a9aee8033446c30dcc46b3b922"
+  }
+]

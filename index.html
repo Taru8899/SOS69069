@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SOS69069 Ledger</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .nav-links { text-align: center; margin: 6px 0; }
+        .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .nav-links .wallet { color: #facc15; }
+        .nav-links .history { color: var(--brand-blue-soft); }
+        .nav-links .offers { color: var(--brand-green-bright); }
+        .nav-links .legacy { color: #a78bfa; }
+
+        /* Keep original button styles */
+        #connectButton {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            background: var(--brand-blue);
+            color: white;
+        }
+        #connectButton:hover {
+            opacity: 0.9;
+        }
+
+        #mintButton {
+            background: var(--brand-green);
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            color: white;
+        }
+        #mintButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #mintButton:disabled:hover {
+            opacity: 0.5;
+        }
+
+        .method-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .badge-extension {
+            background: #f6851b;
+            color: white;
+        }
+        .badge-walletconnect {
+            background: #3b99fc;
+            color: white;
+        }
+
+        .status-connected { color: #22c55e; }
+        .status-error { color: #ef4444; }
+        .status-warning { color: #facc15; }
+        .status-info { color: #5b8bff; }
+
+        .mint-hint {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* MetaMask link under connect button */
+        .metamask-link {
+            display: block;
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--brand-blue-soft);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .metamask-link:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+        .metamask-link .link-icon {
+            margin-right: 4px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header-row">
+            <a href="index.html">
+                <img src="logo.webp" alt="SOS69069" class="logo-badge">
+            </a>
+            <div>
+                <h1>SOS69069 Ledger</h1>
+                <p class="subtitle">Ethereum Mainnet</p>
+            </div>
+        </div>
+
+        <!-- NAV -->
+        <div class="card nav-links" style="margin-bottom:1px">
+            <a href="index.html" class="wallet">Ledger</a>
+            <a href="history.html" class="history">History</a>
+            <a href="offers.html" class="offers">Presence</a>
+            <a href="legacy.html" class="legacy">Legacy</a>
+        </div>
+
+        <div class="card" style="margin-bottom:3px">
+
+            <button id="connectButton">
+                Connect Ledger
+            </button>
+
+            <!-- MetaMask link under connect button -->
+            <a href="https://link.metamask.io/dapp/taru8899.github.io/sos-wallet/" 
+               target="_blank" 
+               class="metamask-link" 
+               id="metamaskLink">
+                <span class="link-icon">🦊</span> MetaMask Wallet
+            </a>
+
+            <p style="margin-top:8px">Status:</p>
+
+            <div id="status">
+                Ready
+            </div>
+
+            <p style="margin-top:8px">Ledger:</p>
+
+            <div id="address">
+                -
+                <span id="methodBadge"></span>
+            </div>
+
+        </div>
+
+        <div class="card" style="margin-bottom:3px">
+
+            <h2>SOS Presence</h2>
+
+            <p style="font-size:1.2rem; font-weight:700;">
+                Effective:
+                <span id="effective" style="color:var(--brand-blue-soft);">0</span>
+            </p>
+
+            <p style="margin-top:8px">
+                Trust: <span id="trust">0</span> ·
+                Push: <span id="push">0</span> ·
+                Total Supply: <span id="totalSupply">0</span>
+            </p>
+
+            <p style="margin-top:10px">
+                <a id="etherscanLink" href="#" target="_blank" rel="noopener" style="color:var(--brand-blue-soft)">
+                    Open on Etherscan →
+                </a>
+            </p>
+
+        </div>
+
+        <div class="card" style="margin-bottom:3px">
+
+            <button id="mintButton" disabled>
+                Push SOS To Address
+            </button>
+
+            <input id="receiver" placeholder="0x1C10e6574ee696f54b21A611a21313E4714628ad" style="
+            font-weight:700;
+            font-size:16px;
+            text-align:center;
+            border:1.5px solid #2d8cff;
+            border-radius:10px;
+            padding:12px;
+            background:#0f172a;
+            color:white;
+            box-shadow:0 0 12px rgba(45,140,255,.35);
+            margin-top:10px;
+            margin-bottom:10px;
+            width:100%;
+            box-sizing:border-box;
+            ">
+
+            <p style="margin-top:4px;font-weight:700;font-size:17px">
+                Mint 1 SOS or more (max 50, one confirmation each)
+            </p>
+
+            <p class="muted small" id="mintProgress"></p>
+
+            <input id="mintCount" type="number" min="1" max="50" value="1" style="
+            font-weight:700;
+            font-size:22px;
+            text-align:center;
+            border:1.5px solid #2d8cff;
+            border-radius:10px;
+            padding:12px;
+            background:#0f172a;
+            color:white;
+            box-shadow:0 0 12px rgba(45,140,255,.35);
+            margin-top:6px;
+            margin-bottom:10px;
+            ">
+
+        </div>
+
+        <div class="card" style="margin-bottom:3px">
+          <p style="font-size:1.2rem; font-weight:700; line-height:1.55; word-break:normal; overflow-wrap:normal; hyphens:none;">
+            <strong>SOS69069</strong> — it’s a&nbsp;Ledger of Presence with no Assets to hold and no Wallet to drain.<br>
+            Presence written Permanently into the block History, carried Forward by activity, and made Provable through its x2 Legacy Continuity System. An Identityless Record Field.<br>
+          </p>
+        </div>
+    </div>
+
+    <!-- ethers.js v6 -->
+    <script type="module">
+        import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.min.js";
+        window.ethers = ethers;
+        console.log("✅ ethers.js loaded");
+    </script>
+
+    <!-- SOS contract -->
+    <script src="contract.js?v=6"></script>
+
+    <!-- UI -->
+    <script src="app.js?v=6"></script>
+
+    <!-- Status helpers -->
+    <script>
+        const statusEl = document.getElementById('status');
+        const addressEl = document.getElementById('address');
+
+        function setStatus(text, type) {
+            statusEl.innerText = text;
+            statusEl.className = '';
+            if (type === 'connected') {
+                statusEl.classList.add('status-connected');
+            } else if (type === 'error') {
+                statusEl.classList.add('status-error');
+            } else if (type === 'warning') {
+                statusEl.classList.add('status-warning');
+            } else if (type === 'info') {
+                statusEl.classList.add('status-info');
+            }
+        }
+
+        function setAddress(addr, method) {
+            const addrText = addr || '-';
+            let badgeHtml = '';
+            if (method === 'extension') {
+                badgeHtml = '<span class="method-badge badge-extension">🦊 Extension</span>';
+            } else if (method === 'walletconnect') {
+                badgeHtml = '<span class="method-badge badge-walletconnect">📱 Mobile</span>';
+            }
+            addressEl.innerHTML = addrText + ' ' + badgeHtml;
+        }
+    </script>
+
+    <!-- Auto-connect -->
+    <script>
+        window.addEventListener("load", function() {
+            setTimeout(async function() {
+                try {
+                    if (window.ethereum) {
+                        const accounts = await window.ethereum.request({
+                            method: "eth_accounts"
+                        });
+
+                        if (accounts && accounts[0]) {
+                            document.getElementById("status").innerText = "Connecting…";
+
+                            const addr = await connectWallet();
+
+                            if (typeof walletAddress !== "undefined") {
+                                walletAddress = addr;
+                            }
+
+                            setAddress(addr, 'extension');
+
+                            const receiverInput = document.getElementById("receiver");
+                            if (receiverInput) {
+                                receiverInput.value = "0x1C10e6574ee696f54b21A611a21313E4714628ad";
+                            }
+
+                            if (typeof refreshWallet === "function") {
+                                await refreshWallet();
+                            }
+
+                            const mintBtn = document.getElementById("mintButton");
+                            if (mintBtn) mintBtn.disabled = false;
+
+                            document.getElementById("status").innerText = "Connected";
+                            document.getElementById("status").className = "status-connected";
+                            return;
+                        }
+                    }
+
+                    // No ledger connected - read-only mode
+                    const defaultAddr = "0x1C10e6574ee696f54b21A611a21313E4714628ad";
+                    walletAddress = defaultAddr;
+                    setAddress('Read-only mode', '');
+                    setStatus('Read-only mode - connect ledger to mint', 'info');
+
+                    if (typeof refreshWallet === 'function') {
+                        await refreshWallet();
+                    } else if (typeof loadWalletData === 'function') {
+                        await loadWalletData(defaultAddr);
+                    }
+
+                } catch (err) {
+                    console.warn("Auto-connect failed:", err);
+                }
+            }, 600);
+        });
+    </script>
+
+</body>
+
+</html>

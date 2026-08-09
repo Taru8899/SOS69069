@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS69069 · Legacy Continuity</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .nav-links { text-align: center; margin: 6px 0; }
+    .nav-links a {
+      margin: 0 10px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .nav-links .wallet { color: #facc15; }
+    .nav-links .history { color: var(--brand-blue-soft); }
+    .nav-links .offers { color: var(--brand-green-bright); }
+    .nav-links .legacy { color: #a78bfa; }
+
+    #oldAddress {
+      border: 1.5px solid #2d8cff;
+      border-radius: 10px;
+      padding: 12px;
+      background: #0f172a;
+      color: white;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 0 12px rgba(45,140,255,.15);
+      font-weight: 700;
+      text-align: center;
+    }
+    #oldAddress:focus {
+      outline: none;
+      box-shadow: 0 0 16px rgba(45,140,255,.35);
+    }
+    .muted { color: #9ca3af; font-size: 14px; }
+    .small { font-size: 13px; }
+    .success { color: var(--brand-green-bright); }
+    .error { color: #ef4444; }
+    .warn { color: #facc15; }
+    .attempt-card {
+      background: var(--bg);
+      border: 1px solid var(--input-bg);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .attempt-card.winner { border-left: 4px solid var(--brand-green-bright); }
+    .attempt-card.reset { border-left: 4px solid #ef4444; opacity: .85; }
+    .attempt-card.open { border-left: 4px solid #a78bfa; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-left: 6px;
+    }
+    .badge-open { background: #5b21b6; color: #e9d5ff; }
+    .badge-won { background: #15803d; color: white; }
+    .badge-reset { background: #7f1d1d; color: #fecaca; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    #pushProgress { min-height: 20px; color: #facc15; font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header-row">
+    <a href="index.html">
+      <img src="logo.webp" alt="SOS69069" class="logo-badge">
+    </a>
+    <div>
+      <h1>SOS69069 Legacy</h1>
+      <p class="subtitle">Ethereum Mainnet</p>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="card nav-links" style="margin-bottom:1px">
+    <a href="index.html" class="wallet">Ledger</a>
+    <a href="history.html" class="history">History</a>
+    <a href="offers.html" class="offers">Presence</a>
+    <a href="legacy.html" class="legacy">Legacy</a>
+  </div>
+
+  <!-- CONNECT -->
+  <div class="card" style="margin-bottom:3px">
+    <button id="connectButton">Connect Ledger</button>
+    <p style="margin-top:8px">Status:</p>
+    <div id="status">Ready</div>
+    <p style="margin-top:8px">Ledger:</p>
+    <div id="address">-</div>
+  </div>
+
+          <div class="card" style="margin-bottom:3px">
+
+            <h2>SOS Presence</h2>
+
+            <!-- Effective accented in dark blue, matching index.html -->
+            <p style="font-size:1.2rem; font-weight:700;">
+                Effective:
+                <span id="effective" style="color:var(--brand-blue-soft);">0</span>
+            </p>
+
+            <!-- Trust, Push, Total Supply — inline with · separators -->
+            <p style="margin-top:8px">
+                Trust: <span id="trust">0</span> ·
+                Push: <span id="push">0</span> ·
+                Total Supply: <span id="totalSupply">0</span>
+            </p>
+
+            <p style="margin-top:10px">
+                <a id="etherscanLink" href="#" target="_blank" rel="noopener" style="color:var(--brand-blue-soft)">
+                    Open on Etherscan →
+                </a>
+            </p>
+
+        </div>
+
+  <!-- OLD ADDRESS INPUT -->
+  <div class="card" style="margin-bottom:3px">
+    <button id="loadOldBtn" style="background:var(--brand-green)">
+      Load Address
+    </button>
+    <input id="oldAddress" placeholder="0x… paste the address you want to succeed" style="margin-top:8px">
+    <div id="oldData" style="margin-top:12px;display:none">
+      <p style="font-size:1.2rem;font-weight:700">
+        Effective:
+        <span id="oldEffective" style="color:var(--brand-blue-soft)">0</span>
+      </p>
+      <p style="margin-top:8px">
+        Trust: <span id="oldTrust">0</span> ·
+        Push: <span id="oldPush">0</span> ·
+        Total Supply: <span id="oldTotalSupply">0</span>
+      </p>
+      <p id="claimStatus" class="muted small" style="margin-top:8px"></p>
+    </div>
+  </div>
+  </div>
+
+  <!-- RACE / ATTEMPT -->
+  <div class="card" id="raceCard" style="display:none;margin-bottom:3px">
+    <h2>Continuity Race</h2>
+    <p class="muted small">
+      First wallet to increase its own Push by <strong>2 × old Effective</strong>
+      (via pushForMe) while the old address has not pushed again wins the succession.
+      If the old address pushes even once, every open attempt is reset (records kept).
+    </p>
+
+    <div id="targetBox" style="margin:12px 0;padding:12px;background:var(--bg);border-radius:10px">
+      <p>Target pushes needed: <strong id="targetNeeded">—</strong></p>
+      <p>Your progress this attempt: <strong id="myProgress">0</strong></p>
+      <p>Still needed: <strong id="stillNeeded" style="color:#facc15">—</strong></p>
+    </div>
+
+    <p id="pushProgress"></p>
+
+    <button id="startAttemptBtn" disabled>Start / Resume attempt</button>
+    <button id="doPushBtn" disabled style="background:var(--brand-green);margin-top:8px">
+      pushForMe (1 SOS)
+    </button>
+    <button id="doPush5Btn" disabled style="background:#ea580c;margin-top:8px">
+      pushForMe ×5
+    </button>
+  </div>
+  <!-- ATTEMPTS LIST -->
+  <div class="card">
+    <h2>All attempts for this address</h2>
+    <p class="muted small">Every start is kept forever — even after reset.</p>
+    <div id="attemptsList">
+      <p class="muted">Load an old address first.</p>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.min.js";
+  window.ethers = ethers;
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getDatabase, ref, get, set, update, onValue
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwX5jMN6EECEr3n7NpJ60fMrDUwZro8ss",
+    authDomain: "sos69069-145e0.firebaseapp.com",
+    databaseURL: "https://sos69069-145e0-default-rtdb.firebaseio.com",
+    projectId: "sos69069-145e0",
+    storageBucket: "sos69069-145e0.firebasestorage.app",
+    messagingSenderId: "462397970850",
+    appId: "1:462397970850:web:0ceaed4410771a6361bafb"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getDatabase(fbApp);
+
+  window.SOS_LEGACY = {
+    db,
+    ref,
+    get,
+    set,
+    update,
+    onValue
+  };
+</script>
+
+<script src="contract.js?v=5"></script>
+
+<script>
+(function () {
+  let walletAddress = "";
+  let oldAddr = "";
+  let oldEffective = 0n;
+  let oldPush = 0n;
+  let myPush = 0n;
+  let currentAttempt = null;
+  let successionData = null;
+  let unsubAttempts = null;
+  let isConnecting = false;
+
+  const $ = (id) => document.getElementById(id);
+
+  function setStatus(msg, cls) {
+    const el = $("status");
+    el.innerText = msg;
+    el.className = cls || "";
+  }
+
+  function short(a) {
+    if (!a) return "—";
+    return a.slice(0, 6) + "…" + a.slice(-4);
+  }
+
+  // ── Helper to ensure contract functions are available ──
+  function ensureContractFunctions() {
+    if (typeof getTrust !== 'function') {
+      console.error('Contract functions not loaded from contract.js');
+      setStatus('Error: Contract not loaded. Refresh the page.', 'error');
+      return false;
+    }
+    return true;
+  }
+
+  // ── connect ──
+  $("connectButton").onclick = async function () {
+    if (isConnecting) return;
+    try {
+      isConnecting = true;
+      setStatus("Connecting…");
+      
+      if (!ensureContractFunctions()) {
+        isConnecting = false;
+        return;
+      }
+      
+      walletAddress = await connectWallet();
+      $("address").innerText = walletAddress;
+      await refreshMyBalance();
+      setStatus("Connected", "success");
+      $("startAttemptBtn").disabled = !oldAddr;
+      updatePushButtons();
+    } catch (err) {
+      console.error(err);
+      let msg = err.message || String(err);
+      if (msg.includes("Permission denied") || msg.includes("User denied") || msg.includes("rejected") || msg.includes("already processing")) {
+        msg = "Click Connect Wallet";
+      }
+      setStatus(msg, "error");
+    } finally {
+      isConnecting = false;
+    }
+  };
+
+  async function refreshMyBalance() {
+    if (!walletAddress) return;
+    try {
+      if (!ensureContractFunctions()) return;
+      
+      const trust = await getTrust(walletAddress);
+      const push = await getPushCount(walletAddress);
+      const supply = await getTotalSupply();
+      myPush = BigInt(push);
+      $("trust").innerText = trust.toString();
+      $("push").innerText = push.toString();
+      $("effective").innerText = (BigInt(trust) - BigInt(push)).toString();
+      $("totalSupply").innerText = supply.toString();
+    } catch (err) {
+      console.warn("Balance refresh failed:", err);
+      let msg = err.message || String(err);
+      if (msg.includes("Permission denied") || msg.includes("User denied") || msg.includes("rejected")) {
+        setStatus("Click Connect Wallet", "error");
+      } else {
+        setStatus("Balance read error: " + msg, "error");
+      }
+    }
+  }
+
+  // ── load old address ──
+  $("loadOldBtn").onclick = async function () {
+    const raw = $("oldAddress").value.trim();
+    if (!/^0x[a-fA-F0-9]{40}$/i.test(raw)) {
+      alert("Enter a valid 0x address");
+      return;
+    }
+    try {
+      if (!ensureContractFunctions()) return;
+      
+      oldAddr = ethers.getAddress(raw);
+      $("oldAddress").value = oldAddr;
+      setStatus("Loading old address…");
+
+      const trust = await getTrust(oldAddr);
+      const push = await getPushCount(oldAddr);
+      const supply = await getTotalSupply();
+      oldEffective = BigInt(trust) - BigInt(push);
+      oldPush = BigInt(push);
+
+      $("oldEffective").innerText = oldEffective.toString();
+      $("oldTrust").innerText = trust.toString();
+      $("oldPush").innerText = push.toString();
+      $("oldTotalSupply").innerText = supply.toString();
+      $("oldData").style.display = "block";
+      $("raceCard").style.display = "block";
+
+      await loadSuccessionNode();
+      watchAttempts();
+
+      $("startAttemptBtn").disabled = !walletAddress;
+      updateTargetUI();
+      setStatus(walletAddress ? "Ready to race" : "Connect wallet to race", "success");
+    } catch (err) {
+      console.error(err);
+      let msg = err.message || String(err);
+      if (msg.includes("Permission denied") || msg.includes("User denied") || msg.includes("rejected")) {
+        msg = "Click Connect Wallet";
+      }
+      setStatus(msg, "error");
+    }
+  };
+
+  // ── Firebase helpers ──
+  function successionRef(addr) {
+    return window.SOS_LEGACY.ref(
+      window.SOS_LEGACY.db,
+      "successions/" + addr.toLowerCase()
+    );
+  }
+
+  async function loadSuccessionNode() {
+    const snap = await window.SOS_LEGACY.get(successionRef(oldAddr));
+    successionData = snap.val() || { status: "open", attempts: {} };
+    renderClaimStatus();
+    renderAttempts();
+  }
+
+  function watchAttempts() {
+    if (unsubAttempts) unsubAttempts();
+    unsubAttempts = window.SOS_LEGACY.onValue(successionRef(oldAddr), (snap) => {
+      successionData = snap.val() || { status: "open", attempts: {} };
+      renderClaimStatus();
+      renderAttempts();
+      if (walletAddress && successionData.attempts) {
+        const key = walletAddress.toLowerCase();
+        currentAttempt = successionData.attempts[key] || null;
+        updateTargetUI();
+        updatePushButtons();
+      }
+    });
+  }
+
+  function renderClaimStatus() {
+    const el = $("claimStatus");
+    if (!successionData) {
+      el.innerText = "";
+      return;
+    }
+    if (successionData.status === "claimed" && successionData.claimedBy) {
+      el.innerHTML =
+        '<span class="success">CLAIMED</span> by ' +
+        short(successionData.claimedBy) +
+        " on " +
+        (successionData.claimedAt
+          ? new Date(successionData.claimedAt).toLocaleString()
+          : "?");
+    } else {
+      el.innerText = "No completed claim yet — race is open.";
+    }
+  }
+
+  function renderAttempts() {
+    const list = $("attemptsList");
+    const attempts = (successionData && successionData.attempts) || {};
+    const keys = Object.keys(attempts);
+    if (keys.length === 0) {
+      list.innerHTML = '<p class="muted">No attempts recorded yet.</p>';
+      return;
+    }
+
+    keys.sort((a, b) => (attempts[b].startedAt || "").localeCompare(attempts[a].startedAt || ""));
+
+    let html = "";
+    for (const k of keys) {
+      const a = attempts[k];
+      let status = a.status || "open";
+      let cls = "open";
+      let badge = '<span class="badge badge-open">OPEN</span>';
+
+      if (status === "won") {
+        cls = "winner";
+        badge = '<span class="badge badge-won">WON</span>';
+      } else if (status === "reset") {
+        cls = "reset";
+        badge = '<span class="badge badge-reset">RESET</span>';
+      }
+
+      const progress = a.progress || 0;
+      const target = a.target || 0;
+      html +=
+        '<div class="attempt-card ' + cls + '">' +
+        "<div><strong>" + short(a.challenger || k) + "</strong>" + badge + "</div>" +
+        '<div class="muted small" style="margin-top:4px">' +
+        "Started: " + (a.startedAt ? new Date(a.startedAt).toLocaleString() : "?") +
+        " · Target: " + target +
+        " · Progress: " + progress +
+        (a.finishedAt ? " · Finished: " + new Date(a.finishedAt).toLocaleString() : "") +
+        "</div>" +
+        (a.note ? '<div class="muted small">' + a.note + "</div>" : "") +
+        "</div>";
+    }
+    list.innerHTML = html;
+  }
+
+  // ── start / resume attempt ──
+  $("startAttemptBtn").onclick = async function () {
+    if (!walletAddress || !oldAddr) {
+      setStatus("Connect wallet and load old address first", "error");
+      return;
+    }
+    if (successionData && successionData.status === "claimed") {
+      alert("This address is already claimed.");
+      return;
+    }
+
+    try {
+      if (!ensureContractFunctions()) return;
+      
+      const trust = await getTrust(oldAddr);
+      const push = await getPushCount(oldAddr);
+      oldEffective = BigInt(trust) - BigInt(push);
+      oldPush = BigInt(push);
+
+      const myP = await getPushCount(walletAddress);
+      myPush = BigInt(myP);
+
+      const target = oldEffective * 2n;
+      if (target <= 0n) {
+        alert("Old address Effective is 0 — nothing to race for.");
+        return;
+      }
+
+      const key = walletAddress.toLowerCase();
+      const existing = (successionData.attempts || {})[key];
+
+      if (existing && existing.status === "open" && BigInt(existing.oldPush || 0) === oldPush) {
+        currentAttempt = existing;
+        setStatus("Resumed existing open attempt", "success");
+      } else {
+        const attempt = {
+          challenger: walletAddress,
+          startedAt: new Date().toISOString(),
+          oldEffective: oldEffective.toString(),
+          oldPush: oldPush.toString(),
+          newPushAtStart: myPush.toString(),
+          target: target.toString(),
+          progress: "0",
+          status: "open",
+          note: ""
+        };
+        await window.SOS_LEGACY.update(successionRef(oldAddr), {
+          ["attempts/" + key]: attempt,
+          status: "open"
+        });
+        currentAttempt = attempt;
+        setStatus("Attempt started! Need " + target.toString() + " pushes.", "success");
+      }
+
+      updateTargetUI();
+      updatePushButtons();
+    } catch (err) {
+      console.error(err);
+      let msg = err.message || String(err);
+      if (msg.includes("Permission denied") || msg.includes("User denied") || msg.includes("rejected")) {
+        msg = "Click Connect Wallet";
+      }
+      setStatus(msg, "error");
+    }
+  };
+
+  function updateTargetUI() {
+    if (!currentAttempt) {
+      $("targetNeeded").innerText = "—";
+      $("myProgress").innerText = "0";
+      $("stillNeeded").innerText = "—";
+      return;
+    }
+    const target = BigInt(currentAttempt.target || 0);
+    const progress = BigInt(currentAttempt.progress || 0);
+    const still = target > progress ? target - progress : 0n;
+    $("targetNeeded").innerText = target.toString();
+    $("myProgress").innerText = progress.toString();
+    $("stillNeeded").innerText = still.toString();
+  }
+
+  function updatePushButtons() {
+    const can =
+      walletAddress &&
+      oldAddr &&
+      currentAttempt &&
+      currentAttempt.status === "open" &&
+      !(successionData && successionData.status === "claimed");
+    $("doPushBtn").disabled = !can;
+    $("doPush5Btn").disabled = !can;
+    
+    if (!can && walletAddress && oldAddr && !currentAttempt) {
+      // User hasn't started an attempt yet
+      $("doPushBtn").title = "Start an attempt first";
+      $("doPush5Btn").title = "Start an attempt first";
+    }
+  }
+
+  // ── perform pushForMe (1 or batch) ──
+  async function doPushes(count) {
+    if (!currentAttempt || currentAttempt.status !== "open") {
+      setStatus("No active attempt. Click 'Start / Resume attempt' first.", "error");
+      return;
+    }
+
+    $("doPushBtn").disabled = true;
+    $("doPush5Btn").disabled = true;
+    let completed = 0;
+
+    for (let i = 1; i <= count; i++) {
+      $("pushProgress").innerText =
+        count === 1
+          ? "Waiting for wallet confirmation…"
+          : "pushForMe " + i + " of " + count + "… confirm in wallet";
+
+      try {
+        if (!ensureContractFunctions()) {
+          updatePushButtons();
+          return;
+        }
+        
+        const liveOldPush = BigInt(await getPushCount(oldAddr));
+        if (liveOldPush > BigInt(currentAttempt.oldPush)) {
+          await markAttemptReset("Old address pushed — race reset");
+          $("pushProgress").innerText = "RESET — old address pushed";
+          setStatus("Race reset by original address", "warn");
+          await loadSuccessionNode();
+          return;
+        }
+
+        const snap = await window.SOS_LEGACY.get(successionRef(oldAddr));
+        const node = snap.val() || {};
+        if (node.status === "claimed") {
+          $("pushProgress").innerText = "Already claimed by another wallet";
+          setStatus("Already claimed", "error");
+          currentAttempt = null;
+          updatePushButtons();
+          return;
+        }
+
+        const receipt = await pushForMe();
+        completed++;
+
+        const newProgress = BigInt(currentAttempt.progress || 0) + 1n;
+        currentAttempt.progress = newProgress.toString();
+
+        const key = walletAddress.toLowerCase();
+        await window.SOS_LEGACY.update(successionRef(oldAddr), {
+          ["attempts/" + key + "/progress"]: currentAttempt.progress
+        });
+
+        await refreshMyBalance();
+        updateTargetUI();
+
+        if (newProgress >= BigInt(currentAttempt.target)) {
+          await markAttemptWon(receipt && receipt.hash);
+          $("pushProgress").innerText = "🏆 YOU WON THE SUCCESSION!";
+          setStatus("Claim locked — you are the successor!", "success");
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        let msg = err.shortMessage || err.message;
+        if (msg.includes("denied") || msg.includes("rejected") || msg.includes("user rejected")) {
+          msg = "Transaction declined in wallet. Try again.";
+        } else if (msg.includes("Permission denied")) {
+          msg = "Click Connect Wallet";
+        }
+        $("pushProgress").innerText = "Stopped after " + completed + " — " + msg;
+        setStatus(msg, "error");
+        updatePushButtons();
+        return;
+      }
+    }
+
+    const stillNeeded = BigInt(currentAttempt.target) - BigInt(currentAttempt.progress);
+    $("pushProgress").innerText =
+      completed + " pushForMe confirmed. Still need " + stillNeeded.toString();
+    updatePushButtons();
+  }
+
+  async function markAttemptWon(txHash) {
+    const key = walletAddress.toLowerCase();
+    const now = new Date().toISOString();
+    currentAttempt.status = "won";
+    currentAttempt.finishedAt = now;
+    if (txHash) currentAttempt.finalTx = txHash;
+
+    await window.SOS_LEGACY.update(successionRef(oldAddr), {
+      status: "claimed",
+      claimedBy: walletAddress,
+      claimedAt: now,
+      ["attempts/" + key + "/status"]: "won",
+      ["attempts/" + key + "/finishedAt"]: now,
+      ["attempts/" + key + "/finalTx"]: txHash || null
+    });
+  }
+
+  async function markAttemptReset(note) {
+    const attempts = (successionData && successionData.attempts) || {};
+    const updates = {};
+    for (const k of Object.keys(attempts)) {
+      if (attempts[k].status === "open") {
+        updates["attempts/" + k + "/status"] = "reset";
+        updates["attempts/" + k + "/note"] = note || "Reset by original address push";
+        updates["attempts/" + k + "/finishedAt"] = new Date().toISOString();
+      }
+    }
+    updates.status = "open";
+    await window.SOS_LEGACY.update(successionRef(oldAddr), updates);
+    currentAttempt = null;
+  }
+
+  $("doPushBtn").onclick = () => doPushes(1);
+  $("doPush5Btn").onclick = () => doPushes(5);
+
+  // ── Auto-connect wallet ──
+  window.addEventListener("load", function () {
+    setTimeout(async function () {
+      try {
+        if (!window.ethereum) {
+          setStatus("No wallet detected", "info");
+          return;
+        }
+        
+        if (!ensureContractFunctions()) {
+          setStatus("Contract loading... refresh if stuck", "info");
+          return;
+        }
+        
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        if (!accounts || !accounts[0]) {
+          setStatus("Click Connect Ledger", "info");
+          return;
+        }
+
+        setStatus("Connecting…");
+        walletAddress = await connectWallet();
+        $("address").innerText = walletAddress;
+        await refreshMyBalance();
+        setStatus("Connected", "success");
+        $("startAttemptBtn").disabled = !oldAddr;
+        updatePushButtons();
+      } catch (err) {
+        console.warn("Auto-connect failed:", err);
+        let msg = err.message || String(err);
+        if (msg.includes("Permission denied") || msg.includes("User denied") || msg.includes("rejected") || msg.includes("already processing")) {
+          msg = "Click Connect Wallet";
+        } else if (msg.includes("CALL_EXCEPTION") || msg.includes("missing revert data")) {
+          msg = "Contract read error - refresh and try again";
+        }
+        setStatus(msg, "error");
+      }
+    }, 800);
+
+    // Handle URL params for old address
+    const params = new URLSearchParams(window.location.search);
+    const o = params.get("old");
+    if (o) {
+      $("oldAddress").value = o;
+      setTimeout(() => $("loadOldBtn").click(), 1000);
+    }
+  });
+
+  // ── Handle chain/account changes ──
+  if (window.ethereum) {
+    window.ethereum.on("chainChanged", () => {
+      window.location.reload();
+    });
+    window.ethereum.on("accountsChanged", (accounts) => {
+      if (accounts && accounts.length > 0) {
+        window.location.reload();
+      } else {
+        walletAddress = "";
+        $("address").innerText = "-";
+        setStatus("Disconnected - click Connect", "info");
+        updatePushButtons();
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
+
