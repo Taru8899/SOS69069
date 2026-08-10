@@ -370,35 +370,30 @@
       const hashShort = shortHash(o.txHash);
       const idStr = String(i).padStart(5, "0");
 
-      html += `
-        <div class="offer-card ${typeClass}">
-          <div class="offer-header">
-            <span class="offer-id">#${idStr}</span>
-            <span class="offer-type \( {typeClass}"> \){typeLabel}</span>
-            <span class="offer-amount">${o.amount} SOS</span>
-          </div>
-
-          <div class="offer-line">
-            <span class="offer-label">In return:</span>
-            <span class="offer-value"> ${o.price}</span>
-            <span class="offer-label"> · Method:</span>
-            <span class="offer-value"> ${methodFull}</span>
-          </div>
-
-          <div class="offer-line">
-            <span class="offer-label">Contact:</span>
-            <span class="offer-value-contact"> ${o.contact}</span>
-          </div>
-
-          <div class="offer-poster">${o.poster}</div>
-
-          <div class="offer-effective">Effective: ${o.effective}</div>
-
-          <div class="offer-meta">
-            ${timeAgo(o.timestamp)} ·
-            <a href="https://etherscan.io/tx/\( {o.txHash}" target="_blank" rel="noopener"> \){hashShort} ↗</a>
-          </div>
-        </div>`;
+      html += 
+        '<div class="offer-card ' + typeClass + '">' +
+          '<div class="offer-header">' +
+            '<span class="offer-id">#' + idStr + '</span>' +
+            '<span class="offer-type ' + typeClass + '">' + typeLabel + '</span>' +
+            '<span class="offer-amount">' + o.amount + ' SOS</span>' +
+          '</div>' +
+          '<div class="offer-line">' +
+            '<span class="offer-label">In return:</span>' +
+            '<span class="offer-value"> ' + o.price + '</span>' +
+            '<span class="offer-label"> · Method:</span>' +
+            '<span class="offer-value"> ' + methodFull + '</span>' +
+          '</div>' +
+          '<div class="offer-line">' +
+            '<span class="offer-label">Contact:</span>' +
+            '<span class="offer-value-contact"> ' + o.contact + '</span>' +
+          '</div>' +
+          '<div class="offer-poster">' + o.poster + '</div>' +
+          '<div class="offer-effective">Effective: ' + o.effective + '</div>' +
+          '<div class="offer-meta">' +
+            timeAgo(o.timestamp) + ' · ' +
+            '<a href="https://etherscan.io/tx/' + o.txHash + '" target="_blank" rel="noopener">' + hashShort + ' ↗</a>' +
+          '</div>' +
+        '</div>';
     });
 
     list.innerHTML = html;
@@ -455,9 +450,14 @@
 
     try {
       const currentBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, currentBlock - 30000);
+      // Most public RPCs limit eth_getLogs to 10 000 blocks
+      const fromBlock = Math.max(0, currentBlock - 9000);
 
-      const events = await logger.queryFilter(logger.filters.PresenceLogged(), fromBlock, "latest");
+      const events = await logger.queryFilter(
+        logger.filters.PresenceLogged(),
+        fromBlock,
+        "latest"
+      );
 
       allOffers = events.map(ev => {
         const a = ev.args;
