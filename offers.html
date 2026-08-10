@@ -26,7 +26,7 @@
     color: #ffffff;
     font-weight: 900;
   }
-  select {
+  select, input {
     width: 100%;
     padding: 14px;
     border: none;
@@ -35,27 +35,19 @@
     color: white;
     font-size: 16px;
     margin-bottom: 10px;
+    box-sizing: border-box;
   }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
   .chips button {
     width: auto; padding: 10px 16px; margin: 0; font-size: 16px;
     background: var(--input-bg); border-radius: 20px;
-    font-weight: 900;
+    font-weight: 900; border: none; color: white; cursor: pointer;
   }
   .chips button.chip-active { background: var(--brand-blue); }
   button.secondary { background: #4b5563; }
   button:disabled { opacity: 0.45; cursor: not-allowed; }
-  #downloadJsonBtn.has-data,
-  #copyJsonBtn.has-data { background: var(--brand-blue) !important; }
-  .warning-card h2 { color: #facc15; }
-  .info-card h2 { color: var(--brand-blue-soft); }
-  .rules { margin-left: 18px; font-size: 14px; line-height: 1.55; color: #d1d5db; }
-  .rules li { margin-bottom: 6px; }
-  .info-text { font-size: 14px; line-height: 1.6; color: #d1d5db; margin-bottom: 6px; }
-  .muted { color: #9ca3af; font-size: 14px; }
-  .small { font-size: 13px; margin-bottom: 10px; }
   .filters { display: flex; gap: 8px; margin-top: 12px; margin-bottom: 14px; }
-  .filter-btn { width: auto; padding: 8px 14px; margin: 0; font-size: 14px; background: var(--input-bg); }
+  .filter-btn { width: auto; padding: 8px 14px; margin: 0; font-size: 14px; background: var(--input-bg); border: none; color: white; border-radius: 8px; cursor: pointer; }
   .filter-btn.active { background: var(--brand-blue); }
   .offers-list { max-height: 70vh; overflow: auto; }
   .offer-card {
@@ -66,77 +58,28 @@
   .offer-card.buy { border-left: 4px solid var(--brand-blue); }
   .offer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
   .offer-type { font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; color: white; }
+  .offer-type.sell { background: var(--brand-green); }
+  .offer-type.buy { background: var(--brand-blue); }
   .offer-amount { font-size: 18px; font-weight: bold; }
-  .signed-badge { font-size: 11px; background: #7c3aed; padding: 2px 7px; border-radius: 6px; }
-  .pending-badge { font-size: 11px; background: #ca8a04; padding: 2px 7px; border-radius: 6px; }
   .offer-price { font-size: 16px; margin-bottom: 4px; color: #facc15; }
-  .offer-method, .offer-contact, .offer-note, .offer-balance { font-size: 14px; margin-top: 4px; color: #d1d5db; }
+  .offer-method, .offer-contact, .offer-effective { font-size: 14px; margin-top: 4px; color: #d1d5db; }
   .offer-meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
   .offer-meta a { color: var(--brand-blue-soft); }
-  .offer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .small-btn { width: auto; padding: 8px 12px; margin: 0; font-size: 13px; background: var(--input-bg); }
-  .small-btn.danger { background: #b91c1c; }
-  .status-badge { font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: bold; }
-  .status-open { background: var(--input-bg); color: #e5e7eb; }
-  .status-accepted { background: #1d4ed8; color: white; }
-  .status-closed { background: #15803d; color: white; }
-  .signed-msg {
-    margin-top: 8px; padding: 10px; background: #0f172a; border-radius: 8px;
-    font-size: 12px; color: #9ca3af; white-space: pre-wrap; word-break: break-all; display: none;
-  }
-  .signed-msg.show { display: block; }
-  .accept-list { font-size: 13px; color: #d1d5db; margin-top: 6px; }
-  .rep-line { font-size: 13px; color: #a3e635; margin-top: 4px; }
-  code { background: var(--input-bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-  #jsonPreview {
-    width: 100%; margin-top: 12px; background: var(--bg); color: #e5e7eb;
-    border: 1px solid var(--input-bg); border-radius: 10px; padding: 10px;
-    font-size: 12px; font-family: monospace; box-sizing: border-box;
-  }
-  .sync-live { color: #f97316; font-weight: 700; }
-  .sync-dot { display: none; }
-  .effective-blue { color: var(--brand-blue-soft); font-weight: 700; }
-  #connectButton { margin-bottom: 12px; }
-  .offer-id {
-    font-size: 13px;
-    color: #6b7280;
-    margin-right: 8px;
-    font-weight: 700;
-  }
+  .offer-id { font-size: 13px; color: #6b7280; margin-right: 8px; font-weight: 700; }
+  .muted { color: #9ca3af; font-size: 14px; }
   .status-section { margin-top: 8px; }
   .status-section p { margin: 4px 0; }
   .wallet-address { margin-top: 8px; }
-  .market-price-line {
-    font-size: 16px;
-    color: #d1d5db;
-    margin: 6px 0;
+  .market-price-line { font-size: 16px; color: #d1d5db; margin: 6px 0; }
+  .market-price-line .price-value { color: #facc15; font-weight: 700; }
+  #connectButton, #signOfferBtn {
+    width: 100%; padding: 14px; border: none; border-radius: 10px;
+    background: var(--brand-blue); color: white; font-size: 18px;
+    font-weight: 900; cursor: pointer; margin-top: 8px;
   }
-  .market-price-line .price-value {
-    color: #facc15;
-    font-weight: 700;
-  }
-  .live-sync-text {
-    font-size: 18px;
-    font-weight: 700;
-    color: #ffffff;
-  }
-  .live-sync-text .sync-count { color: #f97316; }
-  .safety-rule-item {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #d1d5db;
-    margin-bottom: 6px;
-  }
-  .creator-address-line {
-    font-size: 13px;
-    color: #9ca3af;
-    margin-top: 6px;
-    margin-bottom: 4px;
-    word-break: break-all;
-  }
-  .creator-address-line a {
-    color: var(--brand-blue-soft);
-  }
+  #signOfferBtn:disabled { opacity: 0.5; }
+  .tx-status { margin-top: 10px; font-size: 14px; color: #a3e635; }
+  .tx-error { color: #f87171; }
 </style>
 </head>
 <body>
@@ -160,7 +103,7 @@
   <a href="legacy.html" class="legacy">Legacy</a>
 </div>
 
-<!-- ===== CONNECT LEDGER ===== -->
+<!-- CONNECT -->
 <div class="card" style="margin-bottom:3px">
   <button id="connectButton">CONNECT</button>
   <div class="status-section">
@@ -173,7 +116,7 @@
   </div>
 </div>
 
-<!-- ===== SOS PRESENCE ===== -->
+<!-- SOS PRESENCE -->
 <div class="card" style="margin-bottom:3px">
   <h2>SOS Presence</h2>
   <p style="font-size:1.2rem; font-weight:700;">
@@ -182,10 +125,9 @@
   </p>
   <p style="margin-top:8px">
     Trust: <span id="trust">0</span> ·
-    Push: <span id="push">0</span> ·
-    Total Supply: <span id="totalSupply">0</span>
+    Push: <span id="push">0</span>
   </p>
-  <p id="effectiveHint" class="muted small" style="display:none;color:#fca5a5;margin-top:6px"></p>
+  <p id="effectiveHint" class="muted" style="display:none;color:#fca5a5;margin-top:6px"></p>
   <p style="margin-top:10px">
     <a id="etherscanLink" href="#" target="_blank" rel="noopener" style="color:var(--brand-blue-soft)">
       Open on Etherscan →
@@ -193,62 +135,61 @@
   </p>
 </div>
 
-<!-- ===== Presence of Trust ===== -->
-<div class="card" id="marketCard" style="margin-bottom:3px">
-  <div class="market-price-line">
-    TRUST (max): <span class="price-value" id="midBuy">—</span>
-  </div>
-  <div class="market-price-line">
-    PUSH (max): <span class="price-value" id="midSell">—</span>
-  </div>
-  <p class="muted small" id="midMeta" style="margin-top:8px;display:none;">No priced Presence yet</p>
-</div>
-
-<!-- ===== NEW OFFER / POST PRESENCE ===== -->
+<!-- CREATE PRESENCE -->
 <div class="card">
   <h2>CREATE</h2>
+
+  <label>Type</label>
   <select id="offerType">
-    <option value="sell">TRUST (Recieve Trust)</option>
-    <option value="buy">PUSH (Send Push)</option>
+    <option value="M">TRUST (Receive Trust) — FOR_ME</option>
+    <option value="Y">PUSH (Send Push) — FOR_YOU</option>
   </select>
-  <label>Amount</label>
-  <input id="offerAmount" type="number" min="1" step="1" placeholder="e.g. 1">
-  <label>In RETURN</label>
-  <input id="offerPrice" placeholder="e.g. 0.01 ETH, 5 USDC, or a bag of Chupa Chups">
+
+  <label>Amount (SOS units)</label>
+  <input id="offerAmount" type="number" min="1" step="1" placeholder="e.g. 1" value="1">
+
+  <label>In RETURN (max 5 characters)</label>
+  <input id="offerPrice" maxlength="5" placeholder="e.g. 0.01E / 5USDC / HELLO">
+
+  <label>Method</label>
   <div class="chips" id="methodChips">
-    <button type="button" data-method="ETH">ETH</button>
-    <button type="button" data-method="USDT">USDT</button>
-    <button type="button" data-method="BTC">BTC</button>
-    <button type="button" data-method="Fiat">Fiat</button>
-    <button type="button" data-method="Cash">Cash</button>
-    <button type="button" data-method="Goods">Goods</button>
-    <button type="button" data-method="Services">Services</button>
-    <button type="button" data-method="Other">Other</button>
+    <button type="button" data-method="E" class="chip-active">ETH</button>
+    <button type="button" data-method="U">USDT</button>
+    <button type="button" data-method="B">BTC</button>
+    <button type="button" data-method="F">Fiat</button>
+    <button type="button" data-method="C">Cash</button>
+    <button type="button" data-method="G">Goods</button>
+    <button type="button" data-method="S">Services</button>
+    <button type="button" data-method="O">Other</button>
   </div>
-  <label>Contact</label>
-  <input id="offerContact" placeholder="Telegram / X / Discord / email">
-  <button id="signOfferBtn">CREATE</button>
+
+  <label>Contact (max 15 characters)</label>
+  <input id="offerContact" maxlength="15" placeholder="Telegram / X / email">
+
+  <button id="signOfferBtn" disabled>CREATE PRESENCE</button>
+  <div id="txStatus" class="tx-status"></div>
 </div>
 
-<!-- ===== PRESENCE OFFERS ===== -->
+<!-- LIVE PRESENCES -->
 <div class="card">
   <div class="filters">
     <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="sell">TRUST</button>
-    <button class="filter-btn" data-filter="buy">PUSH</button>
+    <button class="filter-btn" data-filter="M">TRUST (FOR_ME)</button>
+    <button class="filter-btn" data-filter="Y">PUSH (FOR_YOU)</button>
   </div>
-  <div id="offersList" class="offers-list"><p class="muted">Loading Presence…</p></div>
+  <div id="offersList" class="offers-list">
+    <p class="muted">Connect wallet to load Presence…</p>
+  </div>
 </div>
 
-<!-- ===== SAFETY RULES OF PRESENCE ===== -->
+<!-- SAFETY -->
 <div class="card warning-card" style="margin-bottom:3px">
   <h2>Safety of Presence</h2>
-  <p style="font-size:1.2rem; font-weight:700; line-height:1.55; word-break:normal; overflow-wrap:normal; hyphens:none;">
+  <p style="font-size:1.1rem; font-weight:700; line-height:1.55;">
     SOS itself is never transferred as an Asset.<br>
-    Presence is written Permanently into your Ledger by the SOS minting Action.<br>
-    If TRUST is accepted → you must send PUSH to the Seeker.
-    Effective - genuine unspent activity.Trust = total SOS received. 
-    Push = SOS you minted via actions.<br>
+    Presence is written permanently by the SOS minting action.<br>
+    <strong>TRUST (FOR_ME)</strong> = you seek to receive Trust.<br>
+    <strong>PUSH (FOR_YOU)</strong> = you offer to send Push (requires effective &gt; amount).
   </p>
 </div>
 
@@ -256,186 +197,272 @@
 
 <script type="module">
   import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.min.js";
-  window.ethers = ethers;
-</script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getDatabase, ref, get, set, update, onValue
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  // ========== CONFIG ==========
+  const LOGGER_ADDRESS = "0x330D034E6bD011676D3A44A0A8F84431A0625685";
+  const SOS_ADDRESS    = "0x61af906f53Eb927790055AC8eA99916a01873c15";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAwX5jMN6EECEr3n7NpJ60fMrDUwZro8ss",
-    authDomain: "sos69069-145e0.firebaseapp.com",
-    databaseURL: "https://sos69069-145e0-default-rtdb.firebaseio.com",
-    projectId: "sos69069-145e0",
-    storageBucket: "sos69069-145e0.firebasestorage.app",
-    messagingSenderId: "462397970850",
-    appId: "1:462397970850:web:0ceaed4410771a6361bafb"
-  };
+  const LOGGER_ABI = [
+    "function logPresence(bytes1 pType, uint256 amount, bytes5 priceInReturn, bytes1 method, bytes15 contact) external returns (uint256 id)",
+    "function getPresence(uint256 id) view returns (tuple(uint40 id, bytes1 pType, bytes6 priceAndMethod, uint256 amount, bytes15 contact, int256 effective))",
+    "function getLiveCount() view returns (uint256)",
+    "function totalLogged() view returns (uint256)",
+    "function currentEffective(address wallet) view returns (int256)",
+    "function getPosterPresenceIds(address poster, uint256 start, uint256 count) view returns (uint256[])",
+    "function getPriceAndMethod(uint256 id) view returns (bytes5 priceInReturn, bytes1 method)",
+    "event PresenceLogged(uint256 indexed id, address indexed poster, bytes1 pType, uint256 amount, bytes5 priceInReturn, bytes1 method, bytes15 contact, int256 effective, uint256 timestamp)"
+  ];
 
-  const fbApp = initializeApp(firebaseConfig);
-  const db = getDatabase(fbApp);
-  const offersRef = ref(db, "offers");
+  const SOS_ABI = [
+    "function balanceOf(address) view returns (uint256)",
+    "function pushCountOf(address) view returns (uint256)"
+  ];
 
-  window.SOSDB = {
-    async loadOffers() {
-      const snap = await get(offersRef);
-      const val = snap.val() || {};
-      return Object.values(val);
-    },
-    async saveOffer(offer) {
-      await set(ref(db, "offers/" + offer.id), offer);
-    },
-    watchOffers(callback) {
-      onValue(offersRef, (snap) => {
-        const val = snap.val() || {};
-        callback(Object.values(val));
-      });
-    },
-    watchConnection(callback) {
-      onValue(ref(db, ".info/connected"), (snap) => {
-        callback(snap.val() === true);
-      });
-    }
-  };
-</script>
+  // ========== STATE ==========
+  let provider, signer, logger, sos, userAddress;
+  let selectedMethod = "E";
+  let currentFilter = "all";
+  let allOffers = [];
 
-<script src="contract.js"></script>
-<script src="offers.js"></script>
+  // ========== HELPERS ==========
+  function toBytes5(str) {
+    const s = (str || "").slice(0, 5);
+    return ethers.hexlify(ethers.toUtf8Bytes(s.padEnd(5, "\0"))).slice(0, 12); // 0x + 10 hex
+  }
 
-<script>
-  (function() {
-    // Override watchOffers to limit to 20 and add sequential numbering
-    const originalWatch = window.SOSDB.watchOffers;
-    if (originalWatch) {
-      window.SOSDB.watchOffers = function(callback) {
-        originalWatch(function(offers) {
-          const sorted = offers.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-          const latest20 = sorted.slice(0, 20);
-          const meta = document.getElementById('exportMeta');
-          if (meta) {
-            meta.innerHTML = 'Live · <span class="sync-count">' + latest20.length + ' deal(s) synced</span>';
-          }
-          callback(latest20);
-        });
-      };
-    }
+  function toBytes15(str) {
+    const s = (str || "").slice(0, 15);
+    return ethers.hexlify(ethers.toUtf8Bytes(s.padEnd(15, "\0"))).slice(0, 32); // 0x + 30 hex
+  }
 
-    const listContainer = document.getElementById('offersList');
-    const listObserver = new MutationObserver(function() {
-      const cards = listContainer.querySelectorAll('.offer-card');
-      cards.forEach((card, index) => {
-        if (card.querySelector('.offer-id')) return;
-        const num = String(index).padStart(5, '0');
-        const header = card.querySelector('.offer-header');
-        if (header) {
-          const idSpan = document.createElement('span');
-          idSpan.className = 'offer-id';
-          idSpan.textContent = '#' + num;
-          header.prepend(idSpan);
-        }
-      });
-    });
-    listObserver.observe(listContainer, { childList: true, subtree: true });
-  })();
-</script>
-
-<!-- Auto-connect + balance load -->
-<script>
-  async function loadBalancesFor(addr) {
+  function fromBytes(hex) {
     try {
-      if (typeof getTrust !== "function" || typeof getPushCount !== "function") {
-        console.warn("getTrust / getPushCount not available yet");
-        return;
+      const bytes = ethers.getBytes(hex);
+      let str = "";
+      for (const b of bytes) {
+        if (b === 0) break;
+        str += String.fromCharCode(b);
       }
-      const trust = await getTrust(addr);
-      const push = await getPushCount(addr);
-      const total = typeof getTotalSupply === "function" ? await getTotalSupply() : 0n;
-      const effective = BigInt(trust) - BigInt(push);
-
-      const elEff = document.getElementById("effective");
-      const elTrust = document.getElementById("trust");
-      const elPush = document.getElementById("push");
-      const elTotal = document.getElementById("totalSupply");
-
-      if (elEff) elEff.innerText = effective.toString();
-      if (elTrust) elTrust.innerText = trust.toString();
-      if (elPush) elPush.innerText = push.toString();
-      if (elTotal) elTotal.innerText = total.toString();
-
-      // Update Etherscan link
-      const link = document.getElementById("etherscanLink");
-      if (link) {
-        const SOS_CONTRACT = "0x61af906f53Eb927790055AC8eA99916a01873c15";
-        link.href = "https://etherscan.io/token/" + SOS_CONTRACT + "?a=" + addr;
-        link.innerText = "Open on Etherscan →";
-      }
-
-      const hint = document.getElementById("effectiveHint");
-      if (hint) {
-        if (effective < 0n) {
-          hint.style.display = "block";
-          hint.innerText = "Effective is " + effective.toString() +
-            " — PUSH is blocked. Seek more TRUST.";
-        } else {
-          hint.style.display = "none";
-          hint.innerText = "";
-        }
-      }
-    } catch (err) {
-      console.error("loadBalancesFor failed:", err);
+      return str || "—";
+    } catch {
+      return "—";
     }
   }
 
-  window.addEventListener("load", function () {
-    setTimeout(async function () {
-      try {
-        if (!window.ethereum) return;
+  function shortAddr(a) {
+    return a ? a.slice(0, 6) + "…" + a.slice(-4) : "—";
+  }
 
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts"
-        });
+  function timeAgo(ts) {
+    const diff = Math.floor(Date.now() / 1000) - Number(ts);
+    if (diff < 60) return diff + "s ago";
+    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    return Math.floor(diff / 86400) + "d ago";
+  }
 
-        if (!accounts || !accounts[0]) return;
+  // ========== UI ==========
+  function setStatus(msg, isError = false) {
+    const el = document.getElementById("txStatus");
+    el.textContent = msg;
+    el.className = isError ? "tx-status tx-error" : "tx-status";
+  }
 
-        document.getElementById("status").innerText = "Connecting…";
+  function updateBalances(trust, push, effective) {
+    document.getElementById("trust").textContent = trust.toString();
+    document.getElementById("push").textContent = push.toString();
+    document.getElementById("effective").textContent = effective.toString();
 
-        const addr = await connectWallet();
-        document.getElementById("address").innerText = addr;
+    const hint = document.getElementById("effectiveHint");
+    if (effective < 0n) {
+      hint.style.display = "block";
+      hint.textContent = "Effective is negative — FOR_YOU posts are blocked.";
+    } else {
+      hint.style.display = "none";
+    }
+  }
 
-        if (typeof refreshWallet === "function") {
-          await refreshWallet();
-        }
+  function renderOffers() {
+    const list = document.getElementById("offersList");
+    let filtered = allOffers;
+    if (currentFilter === "M") filtered = allOffers.filter(o => o.pType === "M");
+    if (currentFilter === "Y") filtered = allOffers.filter(o => o.pType === "Y");
 
-        await loadBalancesFor(addr);
+    if (filtered.length === 0) {
+      list.innerHTML = `<p class="muted">No Presence found yet.</p>`;
+      return;
+    }
 
-        const signBtn = document.getElementById("signOfferBtn");
-        if (signBtn) signBtn.disabled = false;
+    list.innerHTML = filtered.map((o, i) => {
+      const typeLabel = o.pType === "M" ? "TRUST (FOR_ME)" : "PUSH (FOR_YOU)";
+      const typeClass = o.pType === "M" ? "sell" : "buy";
+      return `
+        <div class="offer-card ${typeClass}">
+          <div class="offer-header">
+            <span class="offer-id">#${String(i).padStart(4, "0")}</span>
+            <span class="offer-type \( {typeClass}"> \){typeLabel}</span>
+            <span class="offer-amount">${o.amount} SOS</span>
+          </div>
+          <div class="offer-price">In return: ${o.price}</div>
+          <div class="offer-method">Method: ${o.method}</div>
+          <div class="offer-contact">Contact: ${o.contact}</div>
+          <div class="offer-effective">Effective at post: ${o.effective}</div>
+          <div class="offer-meta">
+            ${shortAddr(o.poster)} · ${timeAgo(o.timestamp)} ·
+            <a href="https://etherscan.io/tx/${o.txHash}" target="_blank">tx</a>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
-        document.getElementById("status").innerText = "Connected";
-      } catch (err) {
-        console.warn("Auto-connect failed:", err);
-      }
-    }, 700);
+  // ========== CORE ==========
+  async function connectWallet() {
+    if (!window.ethereum) throw new Error("No wallet found");
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer = await provider.getSigner();
+    userAddress = await signer.getAddress();
+
+    logger = new ethers.Contract(LOGGER_ADDRESS, LOGGER_ABI, signer);
+    sos = new ethers.Contract(SOS_ADDRESS, SOS_ABI, provider);
+
+    document.getElementById("address").textContent = userAddress;
+    document.getElementById("status").textContent = "Connected";
+    document.getElementById("signOfferBtn").disabled = false;
+
+    const link = document.getElementById("etherscanLink");
+    link.href = `https://etherscan.io/token/\( {SOS_ADDRESS}?a= \){userAddress}`;
+
+    await refreshBalances();
+    await loadOffers();
+  }
+
+  async function refreshBalances() {
+    if (!userAddress) return;
+    const trust = await sos.balanceOf(userAddress);
+    const push = await sos.pushCountOf(userAddress);
+    const effective = trust - push;
+    updateBalances(trust, push, effective);
+  }
+
+  async function loadOffers() {
+    const list = document.getElementById("offersList");
+    list.innerHTML = `<p class="muted">Loading Presence from chain…</p>`;
+
+    try {
+      // Query last \~5000 blocks for PresenceLogged events (adjust if needed)
+      const currentBlock = await provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - 20000);
+
+      const filter = logger.filters.PresenceLogged();
+      const events = await logger.queryFilter(filter, fromBlock, "latest");
+
+      allOffers = events.map(ev => {
+        const a = ev.args;
+        return {
+          id: a.id.toString(),
+          poster: a.poster,
+          pType: a.pType === "0x4d" ? "M" : "Y",
+          amount: a.amount.toString(),
+          price: fromBytes(a.priceInReturn),
+          method: fromBytes(a.method),
+          contact: fromBytes(a.contact),
+          effective: a.effective.toString(),
+          timestamp: a.timestamp.toString(),
+          txHash: ev.transactionHash
+        };
+      }).reverse(); // newest first
+
+      renderOffers();
+    } catch (err) {
+      console.error(err);
+      list.innerHTML = `<p class="muted">Failed to load events: ${err.message}</p>`;
+    }
+  }
+
+  async function createPresence() {
+    if (!signer) return setStatus("Connect wallet first", true);
+
+    const pType = document.getElementById("offerType").value; // "M" or "Y"
+    const amount = document.getElementById("offerAmount").value;
+    const priceStr = document.getElementById("offerPrice").value.trim();
+    const contactStr = document.getElementById("offerContact").value.trim();
+
+    if (!amount || Number(amount) < 1) return setStatus("Amount must be ≥ 1", true);
+    if (!priceStr) return setStatus("In RETURN is required (max 5 chars)", true);
+    if (!contactStr) return setStatus("Contact is required (max 15 chars)", true);
+
+    const pTypeBytes = pType === "Y" ? "0x59" : "0x4d";
+    const priceBytes = toBytes5(priceStr);
+    const methodBytes = "0x" + selectedMethod.charCodeAt(0).toString(16).padStart(2, "0");
+    const contactBytes = toBytes15(contactStr);
+
+    setStatus("Sending transaction…");
+    document.getElementById("signOfferBtn").disabled = true;
+
+    try {
+      const tx = await logger.logPresence(
+        pTypeBytes,
+        amount,
+        priceBytes,
+        methodBytes,
+        contactBytes,
+        { gasLimit: 350000 }
+      );
+      setStatus("Tx sent: " + tx.hash.slice(0, 12) + "… waiting…");
+      await tx.wait();
+      setStatus("Presence created successfully!");
+      await refreshBalances();
+      await loadOffers();
+    } catch (err) {
+      console.error(err);
+      setStatus(err.reason || err.message || "Transaction failed", true);
+    } finally {
+      document.getElementById("signOfferBtn").disabled = false;
+    }
+  }
+
+  // ========== EVENTS ==========
+  document.getElementById("connectButton").addEventListener("click", async () => {
+    try {
+      document.getElementById("status").textContent = "Connecting…";
+      await connectWallet();
+    } catch (err) {
+      document.getElementById("status").textContent = err.message || "Failed";
+    }
   });
 
-  document.getElementById("connectButton")?.addEventListener("click", async function () {
-    try {
-      const addr = await connectWallet();
-      document.getElementById("address").innerText = addr;
-      await loadBalancesFor(addr);
+  document.getElementById("signOfferBtn").addEventListener("click", createPresence);
 
-      const signBtn = document.getElementById("signOfferBtn");
-      if (signBtn) signBtn.disabled = false;
+  // Method chips
+  document.querySelectorAll("#methodChips button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#methodChips button").forEach(b => b.classList.remove("chip-active"));
+      btn.classList.add("chip-active");
+      selectedMethod = btn.dataset.method;
+    });
+  });
 
-      document.getElementById("status").innerText = "Connected";
-    } catch (err) {
-      document.getElementById("status").innerText = err.message || "Connection failed";
+  // Filters
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter;
+      renderOffers();
+    });
+  });
+
+  // Auto-connect if already authorized
+  window.addEventListener("load", async () => {
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({ method: "eth_accounts" });
+      if (accounts && accounts[0]) {
+        try { await connectWallet(); } catch {}
+      }
     }
   });
 </script>
-
 </body>
 </html>
