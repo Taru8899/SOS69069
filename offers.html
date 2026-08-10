@@ -55,33 +55,56 @@
   .offers-list { max-height: 70vh; overflow: auto; }
   .offer-card {
     background: var(--bg); border: 1px solid var(--input-bg); border-radius: 12px;
-    padding: 14px; margin-bottom: 12px;
+    padding: 16px; margin-bottom: 14px;
   }
   .offer-card.sell { border-left: 4px solid var(--brand-green); }
   .offer-card.buy { border-left: 4px solid var(--brand-blue); }
-  .offer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-  .offer-type { font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; color: white; }
+  .offer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .offer-type {
+    font-size: 15px; font-weight: 900; padding: 4px 10px; border-radius: 6px; color: white;
+  }
   .offer-type.sell { background: var(--brand-green); }
   .offer-type.buy { background: var(--brand-blue); }
-  .offer-amount { font-size: 18px; font-weight: bold; }
-  .offer-price { font-size: 16px; margin-bottom: 4px; color: #facc15; }
-  .offer-method, .offer-contact, .offer-effective { font-size: 14px; margin-top: 4px; color: #d1d5db; }
-  .offer-meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
-  .offer-meta a { color: var(--brand-blue-soft); }
-  .offer-id { font-size: 13px; color: #6b7280; margin-right: 8px; font-weight: 700; }
+  .offer-amount { font-size: 20px; font-weight: 900; color: #ffffff; }
+  .offer-price-method {
+    font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #facc15;
+  }
+  .offer-contact {
+    font-size: 16px; font-weight: 700; margin-top: 4px; color: #e5e7eb;
+  }
+  .offer-effective {
+    font-size: 16px; font-weight: 700; margin-top: 6px; color: #3b82f6;
+  }
+  .offer-poster {
+    font-size: 14px; font-weight: 600; margin-top: 8px; color: #d1d5db;
+    word-break: break-all;
+  }
+  .offer-meta {
+    font-size: 15px; font-weight: 700; color: #9ca3af; margin-top: 10px;
+  }
+  .offer-meta a {
+    color: var(--brand-blue-soft);
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: underline;
+    padding: 2px 4px;
+  }
+  .offer-id { font-size: 14px; color: #6b7280; margin-right: 8px; font-weight: 700; }
   .muted { color: #9ca3af; font-size: 14px; }
   .small { font-size: 13px; margin-bottom: 10px; }
   .status-section { margin-top: 8px; }
   .status-section p { margin: 4px 0; }
   .wallet-address { margin-top: 8px; }
   .market-price-line {
-    font-size: 16px;
+    font-size: 18px;
     color: #d1d5db;
-    margin: 6px 0;
+    margin: 8px 0;
+    font-weight: 700;
   }
   .market-price-line .price-value {
     color: #facc15;
-    font-weight: 700;
+    font-weight: 900;
+    font-size: 20px;
   }
   #connectButton, #signOfferBtn {
     width: 100%; padding: 14px; border: none; border-radius: 10px;
@@ -171,7 +194,7 @@
   <label>Amount</label>
   <input id="offerAmount" type="number" min="1" step="1" placeholder="e.g. 1" value="1">
   <label>In RETURN</label>
-  <input id="offerPrice" maxlength="5" placeholder="e.g. 0.01E / 5USDC (max 5 chars)">
+  <input id="offerPrice" maxlength="5" placeholder="e.g. 1.000 / 5.000 (max 5 chars)">
   <div class="char-limit">Max 5 characters</div>
   <div class="chips" id="methodChips">
     <button type="button" data-method="E" class="chip-active">ETH</button>
@@ -244,6 +267,18 @@
   let currentFilter = "all";
   let allOffers = [];
 
+  // Method short → full name
+  const METHOD_MAP = {
+    "E": "ETH",
+    "U": "USDT",
+    "B": "BTC",
+    "F": "Fiat",
+    "C": "Cash",
+    "G": "Goods",
+    "S": "Services",
+    "O": "Other"
+  };
+
   // ========== HELPERS ==========
   function toBytes5(str) {
     const s = (str || "").slice(0, 5);
@@ -269,8 +304,17 @@
     } catch { return "—"; }
   }
 
-  function shortAddr(a) {
-    return a ? a.slice(0, 6) + "…" + a.slice(-4) : "—";
+  function expandMethod(code) {
+    if (!code || code === "—") return "—";
+    const c = code.toUpperCase().charAt(0);
+    return METHOD_MAP[c] || code;
+  }
+
+  // Format amount as 5-symbol style (e.g. 1.000 / 5.000)
+  function formatAmount5(amt) {
+    const n = Number(amt);
+    if (isNaN(n)) return "—";
+    return n.toFixed(4).slice(0, 6); // e.g. "1.0000" or "12.000" → keep visual 5–6 chars
   }
 
   function timeAgo(ts) {
@@ -294,41 +338,47 @@
     if (currentFilter === "M") filtered = allOffers.filter(o => o.pType === "M");
     if (currentFilter === "Y") filtered = allOffers.filter(o => o.pType === "Y");
 
+    // TRUST max / PUSH max (max amount, shown in 5-symbol style)
+    let maxTrust = 0;
+    let maxPush = 0;
+    allOffers.forEach(o => {
+      const amt = Number(o.amount || 0);
+      if (o.pType === "M" && amt > maxTrust) maxTrust = amt;
+      if (o.pType === "Y" && amt > maxPush) maxPush = amt;
+    });
+    document.getElementById("midBuy").textContent  = maxTrust > 0 ? formatAmount5(maxTrust) : "—";
+    document.getElementById("midSell").textContent = maxPush  > 0 ? formatAmount5(maxPush)  : "—";
+    document.getElementById("midMeta").textContent =
+      (maxTrust > 0 || maxPush > 0) ? "" : "No priced Presence yet";
+
     if (filtered.length === 0) {
       list.innerHTML = `<p class="muted">No Presence found.</p>`;
       return;
     }
 
-    // Update TRUST max / PUSH max
-    let maxTrust = 0n;
-    let maxPush = 0n;
-    allOffers.forEach(o => {
-      const amt = BigInt(o.amount || 0);
-      if (o.pType === "M" && amt > maxTrust) maxTrust = amt;
-      if (o.pType === "Y" && amt > maxPush) maxPush = amt;
-    });
-    document.getElementById("midBuy").textContent = maxTrust > 0n ? maxTrust.toString() : "—";
-    document.getElementById("midSell").textContent = maxPush > 0n ? maxPush.toString() : "—";
-    document.getElementById("midMeta").textContent =
-      (maxTrust > 0n || maxPush > 0n) ? "" : "No priced Presence yet";
-
     list.innerHTML = filtered.map((o, i) => {
-      const typeLabel = o.pType === "M" ? "TRUST" : "PUSH";
-      const typeClass = o.pType === "M" ? "sell" : "buy";
+      const isTrust = o.pType === "M";
+      const typeLabel = isTrust
+        ? `Receive Trust ${o.amount} SOS`
+        : `Send Push ${o.amount} SOS`;
+      const typeClass = isTrust ? "sell" : "buy";
+      const methodFull = expandMethod(o.method);
+
       return `
         <div class="offer-card ${typeClass}">
           <div class="offer-header">
             <span class="offer-id">#${String(i).padStart(5, "0")}</span>
             <span class="offer-type \( {typeClass}"> \){typeLabel}</span>
-            <span class="offer-amount">${o.amount} SOS</span>
           </div>
-          <div class="offer-price">In return: ${o.price}</div>
-          <div class="offer-method">Method: ${o.method}</div>
+          <div class="offer-price-method">
+            In return: ${o.price} · Method: ${methodFull}
+          </div>
           <div class="offer-contact">Contact: ${o.contact}</div>
           <div class="offer-effective">Effective at post: ${o.effective}</div>
+          <div class="offer-poster">Poster: ${o.poster}</div>
           <div class="offer-meta">
-            ${shortAddr(o.poster)} · ${timeAgo(o.timestamp)} ·
-            <a href="https://etherscan.io/tx/${o.txHash}" target="_blank" rel="noopener">tx</a>
+            ${timeAgo(o.timestamp)} ·
+            <a href="https://etherscan.io/tx/${o.txHash}" target="_blank" rel="noopener">View Tx ↗</a>
           </div>
         </div>`;
     }).join("");
