@@ -307,7 +307,7 @@
 
   function expandMethod(code) {
     if (!code || code === "—") return "—";
-    const c = code.toUpperCase().charAt(0);
+    const c = String(code).toUpperCase().charAt(0);
     return METHOD_MAP[c] || code;
   }
 
@@ -318,7 +318,7 @@
   }
 
   function shortHash(hash) {
-    if (!hash || hash.length < 12) return hash || "—";
+    if (!hash || hash.length < 14) return hash || "—";
     return hash.slice(0, 8) + "…" + hash.slice(-6);
   }
 
@@ -357,21 +357,23 @@
       (maxTrust > 0 || maxPush > 0) ? "" : "No priced Presence yet";
 
     if (filtered.length === 0) {
-      list.innerHTML = `<p class="muted">No Presence found.</p>`;
+      list.innerHTML = '<p class="muted">No Presence found.</p>';
       return;
     }
 
-    list.innerHTML = filtered.map((o, i) => {
+    let html = "";
+    filtered.forEach((o, i) => {
       const isTrust = o.pType === "M";
       const typeClass = isTrust ? "sell" : "buy";
-      // Bold type + amount next to it
       const typeLabel = isTrust ? "Trust" : "Push";
       const methodFull = expandMethod(o.method);
+      const hashShort = shortHash(o.txHash);
+      const idStr = String(i).padStart(5, "0");
 
-      return `
+      html += `
         <div class="offer-card ${typeClass}">
           <div class="offer-header">
-            <span class="offer-id">#${String(i).padStart(5, "0")}</span>
+            <span class="offer-id">#${idStr}</span>
             <span class="offer-type \( {typeClass}"> \){typeLabel}</span>
             <span class="offer-amount">${o.amount} SOS</span>
           </div>
@@ -394,10 +396,12 @@
 
           <div class="offer-meta">
             ${timeAgo(o.timestamp)} ·
-            <a href="https://etherscan.io/tx/\( {o.txHash}" target="_blank" rel="noopener"> \){shortHash(o.txHash)} ↗</a>
+            <a href="https://etherscan.io/tx/\( {o.txHash}" target="_blank" rel="noopener"> \){hashShort} ↗</a>
           </div>
         </div>`;
-    }).join("");
+    });
+
+    list.innerHTML = html;
   }
 
   // ========== CORE ==========
@@ -416,7 +420,7 @@
     document.getElementById("signOfferBtn").disabled = false;
 
     const link = document.getElementById("etherscanLink");
-    link.href = `https://etherscan.io/token/\( {SOS_ADDRESS}?a= \){userAddress}`;
+    link.href = "https://etherscan.io/token/" + SOS_ADDRESS + "?a=" + userAddress;
 
     await refreshBalances();
     await loadOffers();
@@ -439,7 +443,7 @@
     const hint = document.getElementById("effectiveHint");
     if (effective < 0n) {
       hint.style.display = "block";
-      hint.textContent = `Effective is ${effective} — PUSH is blocked. Seek more TRUST.`;
+      hint.textContent = "Effective is " + effective + " — PUSH is blocked. Seek more TRUST.";
     } else {
       hint.style.display = "none";
     }
@@ -447,7 +451,7 @@
 
   async function loadOffers() {
     const list = document.getElementById("offersList");
-    list.innerHTML = `<p class="muted">Loading Presence…</p>`;
+    list.innerHTML = '<p class="muted">Loading Presence…</p>';
 
     try {
       const currentBlock = await provider.getBlockNumber();
@@ -474,7 +478,7 @@
       renderOffers();
     } catch (err) {
       console.error(err);
-      list.innerHTML = `<p class="muted">Failed to load: ${err.message}</p>`;
+      list.innerHTML = '<p class="muted">Failed to load: ' + (err.message || err) + '</p>';
     }
   }
 
