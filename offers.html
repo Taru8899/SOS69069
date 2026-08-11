@@ -336,6 +336,37 @@
     el.className = isError ? "tx-status tx-error" : "tx-status";
   }
 
+  // Parse numeric price from "In RETURN" string (e.g. "1.000", "100", "5.5")
+  function parsePrice(str) {
+    if (!str || str === "—") return null;
+    const cleaned = String(str).replace(/[^0-9.]/g, "");
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? null : n;
+  }
+
+  // Middle (average) price per 1 SOS unit
+  function middlePricePerUnit(offersOfType) {
+    const ratios = [];
+    offersOfType.forEach(o => {
+      const price = parsePrice(o.price);
+      const amt = Number(o.amount);
+      if (price !== null && amt > 0) {
+        ratios.push(price / amt);
+      }
+    });
+    if (ratios.length === 0) return null;
+    const sum = ratios.reduce((a, b) => a + b, 0);
+    return sum / ratios.length;
+  }
+
+  function formatMiddle(n) {
+    if (n === null || isNaN(n)) return "—";
+    if (n >= 1000) return n.toFixed(0) + ".";
+    if (n >= 100) return n.toFixed(1);
+    if (n >= 10) return n.toFixed(2);
+    return n.toFixed(2);
+  }
+
   // ========== RENDER ==========
   function renderOffers() {
     const list = document.getElementById("offersList");
@@ -343,18 +374,17 @@
     if (currentFilter === "M") filtered = allOffers.filter(o => o.pType === "M");
     if (currentFilter === "Y") filtered = allOffers.filter(o => o.pType === "Y");
 
-    // TRUST max / PUSH max
-    let maxTrust = 0;
-    let maxPush = 0;
-    allOffers.forEach(o => {
-      const amt = Number(o.amount || 0);
-      if (o.pType === "M" && amt > maxTrust) maxTrust = amt;
-      if (o.pType === "Y" && amt > maxPush) maxPush = amt;
-    });
-    document.getElementById("midBuy").textContent  = maxTrust > 0 ? formatAmount5(maxTrust) : "—";
-    document.getElementById("midSell").textContent = maxPush  > 0 ? formatAmount5(maxPush)  : "—";
+    // TRUST (max) / PUSH (max) = middle price per 1 unit
+    const trustOffers = allOffers.filter(o => o.pType === "M");
+    const pushOffers  = allOffers.filter(o => o.pType === "Y");
+
+    const midTrust = middlePricePerUnit(trustOffers);
+    const midPush  = middlePricePerUnit(pushOffers);
+
+    document.getElementById("midBuy").textContent  = formatMiddle(midTrust);
+    document.getElementById("midSell").textContent = formatMiddle(midPush);
     document.getElementById("midMeta").textContent =
-      (maxTrust > 0 || maxPush > 0) ? "" : "No priced Presence yet";
+      (midTrust !== null || midPush !== null) ? "" : "No priced Presence yet";
 
     if (filtered.length === 0) {
       list.innerHTML = '<p class="muted">No Presence found.</p>';
